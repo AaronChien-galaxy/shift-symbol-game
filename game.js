@@ -71,6 +71,7 @@
   // 遊戲狀態：units[題][字]，'[Caps]' 這種題目只有一個單位 ⇪
   let li = 0, si = 0, words = [], units = [], qi = 0, ci = 0, mistakes = 0, totalChars = 0;
   let locked = false, shiftHeld = false, capsOn = false, playing = false;
+  let uid = null, attempt = null;   // uid：登入的 5 碼號碼；null 代表訪客不記錄
   const msg = $('msg');
   const say = (t, c) => { msg.textContent = t; msg.className = 'msg ' + (c || ''); };
   const toUnits = w => w === '[Caps]' ? ['⇪'] : [...w];
@@ -85,8 +86,27 @@
     } catch (e) {}
   }
 
+  // 把這一組的結果送到試算表。no-cors＋text/plain 不會觸發預檢，頁面關閉時也能送（keepalive）
+  function send(d) {
+    if (!uid || typeof RECORD_URL === 'undefined' || !RECORD_URL) return;
+    try { fetch(RECORD_URL, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain'}, body:JSON.stringify(d)}); } catch (e) {}
+  }
+  function report(done, stars) {
+    if (!attempt || attempt.sent) return;
+    attempt.sent = true;
+    const lv = LEVELS[li];
+    send({id:uid, level:lv.id, title:lv.title, set:si, done, mistakes, stars:stars || 0,
+          seconds:Math.round((Date.now() - attempt.t0) / 1000), progress:qi + '/' + units.length});
+  }
+  // 中途離開（回選單、Esc、關網頁）：打過至少一個鍵才算一筆「未完成」
+  function abandon() {
+    if (playing && attempt && !attempt.sent && (qi > 0 || ci > 0 || mistakes > 0)) report(false, 0);
+  }
+
   function start(i, s = 0) {
+    abandon();
     li = i; si = s; const lv = LEVELS[i];
+    attempt = {t0:Date.now(), sent:false};
     words = lv.make ? lv.make() : lv.sets[s].slice();
     units = words.map(toUnits);
     totalChars = units.reduce((n, u) => n + u.length, 0);
@@ -145,6 +165,7 @@
     const stars = mistakes <= totalChars * .2 ? 3 : mistakes <= totalChars * .6 ? 2 : 1;
     const key = setKey(lv, si);
     if (stars > (best[key] || 0)) { best[key] = stars; save(best); }
+    report(true, stars);
     const hasNextSet = !!lv.sets && si < lv.sets.length - 1;
     const hasNextLevel = li < LEVELS.length - 1;
     const c = $('card'); c.innerHTML = '';
@@ -162,7 +183,7 @@
     bt.lastChild.focus();
   }
 
-  function toMenu() { playing = false; $('caps').hidden = true; $('ov').classList.remove('show'); $('play').hidden = true; $('menu').hidden = false; buildMenu(); }
+  function toMenu() { abandon(); playing = false; $('caps').hidden = true; $('ov').classList.remove('show'); $('play').hidden = true; $('menu').hidden = false; buildMenu(); }
 
   // 右邊數字鍵盤：換算成主鍵盤上對應的鍵（* 和 + 在數字鍵盤上不用 Shift）
   const NUMPAD = {NumpadDecimal:['Period',0], NumpadSubtract:['Minus',0], NumpadDivide:['Slash',0],
@@ -231,7 +252,28 @@
     shiftHeld = false; Object.values(keyEl).forEach(k => k.classList.remove('down')); if (playing) paint();
   });
 
+  // 登入：班級 3 碼＋座號 2 碼。不記住，避免共用電腦記到上一位同學
+  function showLogin() {
+    uid = null; $('menu').hidden = true; $('play').hidden = true; $('login').hidden = false;
+    $('sid').value = ''; $('loginMsg').textContent = ''; $('sid').focus();
+  }
+  function enter(id) {
+    uid = id; $('login').hidden = true; $('menu').hidden = false;
+    $('whoTxt').textContent = id ? '目前登入：' + id : '訪客（不記錄成績）';
+    buildMenu();
+  }
+  $('lf').onsubmit = e => {
+    e.preventDefault();
+    const v = $('sid').value.trim();
+    if (!/^\d{5}$/.test(v)) { $('loginMsg').textContent = '要打 5 個數字喔，例如 30205'; return; }
+    enter(v);
+  };
+  $('sid').oninput = e => { e.target.value = e.target.value.replace(/\D/g, ''); };
+  $('guest').onclick = () => enter(null);
+  $('logout').onclick = showLogin;
+  window.addEventListener('pagehide', abandon);
+
   $('back').onclick = toMenu;
   $('showhint').onchange = e => $('play').classList.toggle('nohint', !e.target.checked);
-  buildMenu();
+  showLogin();
 })();

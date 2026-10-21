@@ -13,8 +13,23 @@
   <p class="sub">看到藍色的 Shift，就先按住它不放，再按黃色的鍵。</p>
 </header>
 
+<!-- 登入 -->
+<main id="login" class="login">
+  <form id="lf">
+    <h2>請輸入你的號碼</h2>
+    <p>班級 3 碼＋座號 2 碼。例如三年二班 5 號，就打 <b>30205</b></p>
+    <input id="sid" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="30205">
+    <div class="lbtns">
+      <button type="submit" id="enter">進入</button>
+      <button type="button" id="guest" class="ghost">不登入，先玩玩看（不記錄）</button>
+    </div>
+    <p id="loginMsg" class="loginmsg"></p>
+  </form>
+</main>
+
 <!-- 選單 -->
-<main id="menu" class="menu">
+<main id="menu" class="menu" hidden>
+  <div class="who" id="who"><span id="whoTxt"></span> <button id="logout" class="ghost">換人</button></div>
   <div class="grid" id="grid"></div>
   <p class="foot">進度只存在這台電腦的瀏覽器裡。要換電腦或清除，直接清掉瀏覽器資料即可。</p>
 </main>
@@ -38,6 +53,7 @@
 
 <div class="overlay" id="ov"><div class="card" id="card"></div></div>
 
+<script src="config.js"></script>
 <script src="levels.js"></script>
 <script src="game.js"></script>
 </body>
