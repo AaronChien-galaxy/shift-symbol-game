@@ -53,6 +53,7 @@ h1{margin:4px 0 2px;font-size:30px}
 .k.target{background:var(--target);border-color:#e0a800;animation:pulse 1s infinite}
 .k.shiftneed{background:#cfe6ff;border-color:var(--shift);animation:pulse 1s infinite}
 .k.shiftdown{background:var(--shift);color:#fff;border-color:#1f7fe0}
+.k.lockon{background:#c9f2dc;border-color:var(--ok)}
 .nohint .k.target,.nohint .k.shiftneed{background:var(--key);border-color:var(--edge);animation:none}
 @keyframes pulse{50%{transform:scale(1.07)}}
 .tip{margin-top:10px;font-size:17px;color:var(--mute)}
