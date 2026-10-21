@@ -44,20 +44,28 @@
   function buildMenu() {
     const g = $('grid'); g.innerHTML = '';
     LEVELS.forEach((lv, i) => {
-      const b = document.createElement('button'); b.className = 'lv';
-      const n = best[lv.id] || 0;
-      b.innerHTML = '<span class="n"></span><span class="t"></span><span class="d"></span><span class="s"></span>';
-      b.children[0].textContent = '第 ' + (i + 1) + ' 關';
-      b.children[1].textContent = lv.title;
-      b.children[2].textContent = lv.desc;
-      b.children[3].textContent = '★'.repeat(n) + '☆'.repeat(3 - n);
-      b.onclick = () => start(i);
-      g.appendChild(b);
+      const card = document.createElement('div'); card.className = 'lv';
+      const mkSpan = (cls, t) => { const s = document.createElement('span'); s.className = cls; s.textContent = t; card.appendChild(s); };
+      mkSpan('n', '第 ' + (i + 1) + ' 關');
+      mkSpan('t', lv.title);
+      mkSpan('d', lv.desc);
+      const row = document.createElement('div'); row.className = 'sets';
+      const count = lv.sets ? lv.sets.length : 1;
+      for (let s = 0; s < count; s++) {
+        const n = best[setKey(lv, s)] || 0;
+        const b = document.createElement('button');
+        b.textContent = (lv.sets ? '第 ' + (s + 1) + ' 組' : '開始') + '　' + '★'.repeat(n) + '☆'.repeat(3 - n);
+        b.onclick = () => start(i, s);
+        row.appendChild(b);
+      }
+      card.appendChild(row);
+      g.appendChild(card);
     });
   }
+  const setKey = (lv, s) => lv.id + '#' + s;
 
   // 遊戲狀態
-  let li = 0, words = [], qi = 0, ci = 0, mistakes = 0, totalChars = 0, locked = false, shiftHeld = false, playing = false;
+  let li = 0, si = 0, words = [], qi = 0, ci = 0, mistakes = 0, totalChars = 0, locked = false, shiftHeld = false, playing = false;
   const msg = $('msg');
   const say = (t, c) => { msg.textContent = t; msg.className = 'msg ' + (c || ''); };
 
@@ -71,13 +79,13 @@
     } catch (e) {}
   }
 
-  function start(i) {
-    li = i; const lv = LEVELS[i];
-    words = lv.make ? lv.make() : lv.items.slice();
+  function start(i, s = 0) {
+    li = i; si = s; const lv = LEVELS[i];
+    words = lv.make ? lv.make() : lv.sets[s].slice();
     totalChars = words.reduce((s, w) => s + w.length, 0);
     qi = 0; ci = 0; mistakes = 0; locked = false; playing = true;
     $('menu').hidden = true; $('play').hidden = false; $('ov').classList.remove('show');
-    $('ttl').textContent = '第 ' + (i + 1) + ' 關　' + lv.title;
+    $('ttl').textContent = '第 ' + (i + 1) + ' 關　' + lv.title + (lv.sets ? '　第 ' + (s + 1) + ' 組' : '');
     $('tip').textContent = lv.tip || '';
     say('');
     render();
@@ -119,8 +127,10 @@
     playing = false;
     const lv = LEVELS[li];
     const stars = mistakes <= totalChars * .2 ? 3 : mistakes <= totalChars * .6 ? 2 : 1;
-    if (stars > (best[lv.id] || 0)) { best[lv.id] = stars; save(best); }
-    const last = li >= LEVELS.length - 1;
+    const key = setKey(lv, si);
+    if (stars > (best[key] || 0)) { best[key] = stars; save(best); }
+    const hasNextSet = !!lv.sets && si < lv.sets.length - 1;
+    const hasNextLevel = li < LEVELS.length - 1;
     const c = $('card'); c.innerHTML = '';
     const h = document.createElement('h2'); h.textContent = '這一關過了！';
     const s = document.createElement('div'); s.className = 'st'; s.textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
@@ -128,8 +138,9 @@
     const bt = document.createElement('div'); bt.className = 'btns';
     const mk = (t, cls, fn) => { const b = document.createElement('button'); b.textContent = t; if (cls) b.className = cls; b.onclick = fn; bt.appendChild(b); return b; };
     mk('回選單', 'alt', toMenu);
-    mk('再玩一次', 'alt', () => start(li));
-    if (!last) mk('下一關', '', () => start(li + 1));
+    mk(lv.sets ? '再玩這一組' : '再玩一次', 'alt', () => start(li, si));
+    if (hasNextSet) mk('下一組', hasNextLevel ? 'alt' : '', () => start(li, si + 1));
+    if (hasNextLevel) mk('下一關', '', () => start(li + 1));
     c.append(h, s, p, bt);
     $('ov').classList.add('show');
     bt.lastChild.focus();

@@ -15,7 +15,9 @@ h1{margin:4px 0 2px;font-size:30px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .lv{background:#fff;border:2px solid var(--edge);border-radius:16px;padding:14px 16px;text-align:left;font:inherit;
     cursor:pointer;display:flex;flex-direction:column;gap:4px}
-.lv:hover{border-color:var(--shift);transform:translateY(-2px)}
+.lv .sets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.lv .sets button{font:inherit;font-size:15px;padding:5px 10px;border-radius:10px;border:2px solid var(--edge);background:#f7faff;cursor:pointer}
+.lv .sets button:hover{border-color:var(--shift);background:#eaf4ff}
 .lv .n{font-size:14px;color:var(--mute)}
 .lv .t{font-size:21px;font-weight:700}
 .lv .d{font-size:15px;color:var(--mute);min-height:40px}
