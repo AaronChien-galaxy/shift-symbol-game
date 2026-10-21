@@ -148,24 +148,36 @@
 
   function toMenu() { playing = false; $('ov').classList.remove('show'); $('play').hidden = true; $('menu').hidden = false; buildMenu(); }
 
+  // 右邊數字鍵盤：換算成主鍵盤上對應的鍵（* 和 + 在數字鍵盤上不用 Shift）
+  const NUMPAD = {NumpadDecimal:['Period',0], NumpadSubtract:['Minus',0], NumpadDivide:['Slash',0],
+    NumpadMultiply:['Digit8',1], NumpadAdd:['Equal',1], NumpadEnter:['Enter',0]};
+  function norm(e) {
+    const m = /^Numpad(\d)$/.exec(e.code);
+    if (m) return {code:'Digit' + m[1], shift:!!e.shiftKey};
+    const n = NUMPAD[e.code];
+    if (n) return {code:n[0], shift:n[1] ? true : !!e.shiftKey};
+    return {code:e.code, shift:!!e.shiftKey};
+  }
+
   window.addEventListener('keydown', e => {
     if (e.getModifierState) $('caps').hidden = !(playing && e.getModifierState('CapsLock'));
     if (e.ctrlKey || e.altKey || e.metaKey || /^F\d+$/.test(e.code)) return;
     if (!playing) {
-      if ($('ov').classList.contains('show') && (e.code === 'Enter' || e.code === 'Space')) {
+      if ($('ov').classList.contains('show') && (e.code === 'Enter' || e.code === 'NumpadEnter' || e.code === 'Space')) {
         e.preventDefault(); document.querySelector('#card .btns button:last-child').click();
       }
       return;
     }
     e.preventDefault();
     if (e.code === 'Escape') { toMenu(); return; }
-    const el = keyEl[e.code]; if (el) el.classList.add('down');
+    const p = norm(e);
+    const el = keyEl[p.code]; if (el) el.classList.add('down');
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') { shiftHeld = true; paint(); return; }
     if (e.repeat || locked) return;
-    if (e.code === 'Enter' || e.code === 'Backspace' || e.code === 'Tab' || e.code === 'Space') return;
+    if (p.code === 'Enter' || e.code === 'Backspace' || e.code === 'Tab' || e.code === 'Space') return;
     const t = MAP[words[qi][ci]];
-    if (e.code === t.code) {
-      if (!!e.shiftKey === t.shift) {
+    if (p.code === t.code) {
+      if (p.shift === t.shift) {
         say(''); ci++; beep(660, .08);
         if (ci >= words[qi].length) {
           locked = true; say('答對了！', 'good'); beep(880, .15);
@@ -179,7 +191,7 @@
     } else { mistakes++; beep(220, .2); say('再找找看，黃色的那一顆', 'hint'); }
   });
   window.addEventListener('keyup', e => {
-    const el = keyEl[e.code]; if (el) el.classList.remove('down');
+    const el = keyEl[norm(e).code]; if (el) el.classList.remove('down');
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') { shiftHeld = e.shiftKey; if (playing) paint(); }
   });
   window.addEventListener('blur', () => {

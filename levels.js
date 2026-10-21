@@ -5,7 +5,7 @@ const CAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 const LEVELS = [
   { id:'warm', title:'熱身：字母和數字', desc:'不用 Shift，先確認手指找得到鍵。',
-    tip:'這一關都是直接按，不用 Shift',
+    tip:'這一關都是直接按，不用 Shift。數字也可以按鍵盤右邊的數字鍵',
     sets:[
       ['cat','dog','amy05','tom12','ben2026','lily99'],
       ['sun','pig','kid05','mom88','art2020','zoo13'],
