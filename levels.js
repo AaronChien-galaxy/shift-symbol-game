@@ -1,0 +1,43 @@
+// 關卡資料：items 是要依序打出的字串；make 則每次進關卡隨機產生
+const pick = (pool, n) => Array.from({length: n}, () => pool[Math.floor(Math.random() * pool.length)]);
+const SYMBOLS = '!@#$%&*()-_?/.,:'.split('');
+const CAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+const LEVELS = [
+  { id:'warm', title:'熱身：字母和數字', desc:'不用 Shift，先確認手指找得到鍵。',
+    tip:'這一關都是直接按，不用 Shift',
+    items:['cat','dog','amy05','tom12','ben2026','lily99'] },
+  { id:'caps', title:'大寫字母', desc:'按住 Shift，再按字母。',
+    tip:'左手小指按住左邊 Shift，右手按字母',
+    items:['A','B','D','M','S','K','T','G','P'] },
+  { id:'dot-at', title:'句點和 @', desc:'句點直接按，@ 要用 Shift。',
+    tip:'@ 在數字 2 的上面，要先按住 Shift',
+    items:['.','@','.','@','@','.','@'] },
+  { id:'num-sym', title:'數字上面的符號', desc:'! # $ % & 都在數字鍵上面。',
+    tip:'每顆數字鍵有兩個字，上面那個要 Shift',
+    items:['!','#','$','%','&','!','#','$','%','&'] },
+  { id:'paren', title:'括號和星星', desc:'* ( ) ^ 也是數字鍵上面的符號。',
+    tip:'括號在 9 和 0 的上面',
+    items:['*','(',')','^','()','(*)','*'] },
+  { id:'punc', title:'橫線、問號、斜線', desc:'有的要 Shift，有的不用，要看清楚。',
+    tip:'? 和 _ 要 Shift；/ 、 , 、 - 直接按',
+    items:['-','_','?','/',',','a-b','a_b','what?','x/y'] },
+  { id:'names', title:'大寫開頭的名字', desc:'第一個字大寫，後面小寫。',
+    tip:'只有第一個字母要 Shift，打完就放開',
+    items:['Amy','Tom','Lily','Ben','Jack','Emma','Leo','Kevin'] },
+  { id:'email', title:'電子郵件', desc:'登入 Google 會用到 @ 和句點。',
+    tip:'@ 要 Shift，句點直接按',
+    items:['amy@gmail.com','tom@nehs.edu','ben05@gmail.com','lily@mail.com','jack@nehs.edu'] },
+  { id:'url', title:'網址', desc:'www、點、斜線、冒號。',
+    tip:'冒號 : 在 L 旁邊那顆，要 Shift',
+    items:['www.code.org','www.google.com','www.moe.edu.tw','https://code.org','https://www.google.com'] },
+  { id:'pwd', title:'密碼練習', desc:'大寫、小寫、數字和符號混在一起。',
+    tip:'這是練習用的假密碼，不要拿去真的登入',
+    items:['Amy#05','Tom@12','Ben!2026','Lily$88','Jack&7','Emma*10'] },
+  { id:'mix', title:'綜合挑戰', desc:'每次題目都不一樣。',
+    tip:'自己判斷：這個字要不要 Shift？',
+    make:() => [...pick(SYMBOLS, 5), ...pick(CAPS, 3), ...pick(['Amy@12','Tom#05','A.b','x!y','Hi!','Go?'], 2)] },
+  { id:'free', title:'自由練習', desc:'隨機出題，一輪 12 題，想玩幾輪都可以。',
+    tip:'試試看把「鍵盤提示」關掉',
+    make:() => [...pick(SYMBOLS, 6), ...pick(CAPS, 3), ...pick(['a@b','Q&A','#1','$5','50%','(ok)'], 3)] },
+];

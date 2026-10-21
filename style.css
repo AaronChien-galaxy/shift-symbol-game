@@ -1,0 +1,66 @@
+:root{
+  --bg:#f4f7fb; --ink:#1d2a3a; --mute:#5b6b80; --key:#fff; --edge:#c5d0de;
+  --target:#ffd23f; --shift:#4aa3ff; --ok:#2fbf71; --warn:#ff7a59;
+  --u:clamp(30px,5.4vw,56px);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+     min-height:100vh;padding:14px;display:flex;flex-direction:column;align-items:center}
+.top{text-align:center}
+h1{margin:4px 0 2px;font-size:30px}
+.sub{margin:0 0 12px;color:var(--mute);font-size:18px}
+
+.menu{width:min(1040px,100%)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.lv{background:#fff;border:2px solid var(--edge);border-radius:16px;padding:14px 16px;text-align:left;font:inherit;
+    cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.lv:hover{border-color:var(--shift);transform:translateY(-2px)}
+.lv .n{font-size:14px;color:var(--mute)}
+.lv .t{font-size:21px;font-weight:700}
+.lv .d{font-size:15px;color:var(--mute);min-height:40px}
+.lv .s{font-size:22px;color:#e0a800;letter-spacing:2px}
+.foot{text-align:center;color:var(--mute);font-size:14px;margin-top:16px}
+
+.stage{background:#fff;border-radius:20px;padding:14px 26px 18px;box-shadow:0 4px 18px rgba(30,60,100,.1);
+       text-align:center;width:min(1040px,100%)}
+.bar{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}
+.ttl{font-size:20px;font-weight:700}
+.opt{font-size:16px;color:var(--mute);cursor:pointer}
+.ghost{font:inherit;font-size:16px;background:#fff;border:2px solid var(--edge);border-radius:999px;padding:6px 14px;cursor:pointer}
+.count{font-size:18px;color:var(--mute);margin-top:6px}
+.word{margin:4px 0;font-family:Consolas,"Courier New",monospace;font-weight:700;line-height:1.15;min-height:1.2em;
+      word-break:break-all}
+.word .ch{display:inline-block;padding:0 .02em;border-bottom:.08em solid transparent;transition:transform .12s}
+.word .done{color:var(--ok)}
+.word .todo{color:#b7c3d4}
+.word .cur{color:var(--ink);border-bottom-color:var(--target);animation:blink 1s infinite}
+@keyframes blink{50%{border-bottom-color:transparent}}
+.desc{font-size:22px;min-height:32px}
+.msg{font-size:24px;min-height:36px;font-weight:700;margin-top:2px}
+.msg.hint{color:var(--warn)} .msg.good{color:var(--ok)}
+.caps{display:inline-block;margin:4px auto;background:#fff1e8;color:#c24a21;border-radius:8px;padding:4px 12px;font-size:17px}
+
+.kb{margin-top:10px;display:flex;flex-direction:column;gap:6px;align-items:center}
+.row{display:flex;gap:6px}
+.k{width:var(--u);height:var(--u);border-radius:9px;background:var(--key);border:2px solid var(--edge);border-bottom-width:5px;
+   display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(var(--u)*.36);font-weight:600;user-select:none}
+.k small{font-size:calc(var(--u)*.27);color:#7a8aa0;font-weight:600;line-height:1}
+.k.w{width:calc(var(--u)*2.2)} .k.sp{width:calc(var(--u)*6)}
+.k.down{background:#e5edf8;transform:translateY(2px);border-bottom-width:3px}
+.k.target{background:var(--target);border-color:#e0a800;animation:pulse 1s infinite}
+.k.shiftneed{background:#cfe6ff;border-color:var(--shift);animation:pulse 1s infinite}
+.k.shiftdown{background:var(--shift);color:#fff;border-color:#1f7fe0}
+.nohint .k.target,.nohint .k.shiftneed{background:var(--key);border-color:var(--edge);animation:none}
+@keyframes pulse{50%{transform:scale(1.07)}}
+.tip{margin-top:10px;font-size:17px;color:var(--mute)}
+
+.overlay{position:fixed;inset:0;background:rgba(20,40,70,.55);display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.show{display:flex}
+.card{background:#fff;border-radius:24px;padding:28px 44px;text-align:center;max-width:560px}
+.card h2{margin:0 0 6px;font-size:34px}
+.card p{font-size:20px;margin:6px 0}
+.card .st{font-size:40px;color:#e0a800;letter-spacing:4px}
+.card .btns{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.card button{font:inherit;font-size:20px;padding:9px 22px;border:0;border-radius:12px;background:var(--ok);color:#fff;cursor:pointer}
+.card button.alt{background:#e8eef6;color:var(--ink)}
